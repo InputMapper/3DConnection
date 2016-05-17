@@ -92,11 +92,11 @@ namespace _3DConnection
     {
         internal JoyAxis TranslateX = new JoyAxis("Translate X", DataFlowDirection.Input);
         internal JoyAxis TranslateY = new JoyAxis("Translate Y", DataFlowDirection.Input);
-        internal JoyAxis TranslateZ = new JoyAxis("Translate Y", DataFlowDirection.Input);
+        internal JoyAxis TranslateZ = new JoyAxis("Translate Z", DataFlowDirection.Input);
 
         internal JoyAxis RotateX = new JoyAxis("Rotate X", DataFlowDirection.Input);
         internal JoyAxis RotateY = new JoyAxis("Rotate Y", DataFlowDirection.Input);
-        internal JoyAxis RotateZ = new JoyAxis("Rotate Y", DataFlowDirection.Input);
+        internal JoyAxis RotateZ = new JoyAxis("Rotate Z", DataFlowDirection.Input);
 
         internal Button Button1 = new Button("Button 1", DataFlowDirection.Input);
         internal Button Button2 = new Button("Button 2", DataFlowDirection.Input);
@@ -120,11 +120,16 @@ namespace _3DConnection
             listenerThread.Start();
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            listenerThread?.Abort();
+            this.hDevice.CancelIO();
+            base.Dispose(disposing);
+        }
+
         private void ListenerThread()
         {
             byte[] report = new byte[7];
-            byte[] cReport = new byte[21];
-            string[] sReport = new string[21];
 
             bool isResponding = true;
             EventWaitHandle MyEventWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
@@ -157,11 +162,115 @@ namespace _3DConnection
                 {
                     isResponding = false;
                 }
-                Array.Copy(report, 0, cReport, (report[0]-1)*7, report.Length);
-                
-                sReport = cReport.Select(x => x.ToString().PadRight(3)).ToArray();
-                Console.WriteLine(String.Join(" ", sReport));
+
+                if (report[0] == 1) // Translate
+                {
+                    int Xval, Yval, Zval;
+                    double outXval, outYval, outZval;
+
+                    if (report[2] >= 254)
+                    {
+                        Xval = report[1].flip();
+                        if (report[2] == 254) Xval += 256;
+                        Xval *= -1;
+                    } else
+                    {
+                        Xval = report[1];
+                        if (report[2] == 1) Xval += 255;
+                    }
+                    outXval = Xval / 349d;
+
+                    if (report[4] >= 254)
+                    {
+                        Yval = report[3].flip();
+                        if (report[4] == 254) Yval += 256;
+                        Yval *= -1;
+                    }
+                    else
+                    {
+                        Yval = report[3];
+                        if (report[4] == 1) Yval += 255;
+                    }
+                    outYval = Yval / 349d;
+
+                    if (report[6] >= 254)
+                    {
+                        Zval = report[5].flip();
+                        if (report[6] == 254) Zval += 256;
+                        Zval *= -1;
+                    }
+                    else
+                    {
+                        Zval = report[5];
+                        if (report[6] == 1) Zval += 255;
+                    }
+                    outZval = Zval / 349d;
+
+                    TranslateX.Value = outXval;
+                    TranslateY.Value = outYval;
+                    TranslateZ.Value = outZval;
+                }
+                else if (report[0] == 2) // Rotate
+                {
+                    int Xval, Yval, Zval;
+                    double outXval, outYval, outZval;
+
+                    if (report[2] >= 254)
+                    {
+                        Xval = report[1].flip();
+                        if (report[2] == 254) Xval += 256;
+                        Xval *= -1;
+                    }
+                    else
+                    {
+                        Xval = report[1];
+                        if (report[2] == 1) Xval += 255;
+                    }
+                    outXval = Xval / 349d;
+
+                    if (report[4] >= 254)
+                    {
+                        Yval = report[3].flip();
+                        if (report[4] == 254) Yval += 256;
+                        Yval *= -1;
+                    }
+                    else
+                    {
+                        Yval = report[3];
+                        if (report[4] == 1) Yval += 255;
+                    }
+                    outYval = Yval / 349d;
+
+                    if (report[6] >= 254)
+                    {
+                        Zval = report[5].flip();
+                        if (report[6] == 254) Zval += 256;
+                        Zval *= -1;
+                    }
+                    else
+                    {
+                        Zval = report[5];
+                        if (report[6] == 1) Zval += 255;
+                    }
+                    outZval = Zval / 349d;
+
+                    RotateX.Value = outXval;
+                    RotateY.Value = outYval;
+                    RotateZ.Value = outZval;
+                }
+                else if (report[0] == 3) // Buttons
+                {
+                    Button1.Value = ((byte)report[1] & (1 << 0)) != 0;
+                    Button2.Value = ((byte)report[1] & (1 << 1)) != 0;
+                }
             }
+        }
+    }
+    public static class extensions
+    {
+        public static byte flip(this byte inByte)
+        {
+            return (byte)(255 - inByte);
         }
     }
 }
