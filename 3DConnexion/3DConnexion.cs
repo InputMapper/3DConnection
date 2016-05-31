@@ -9,21 +9,21 @@ using System.Windows.Media;
 using System.Threading;
 using System.Diagnostics;
 
-namespace _3DConnection
+namespace _3DConnexion
 {
     [PluginInfo(
-        PluginName = "3D Connection device plugin",
+        PluginName = "3D Connexion device plugin",
         PluginDescription = "",
         PluginID = 0,
         PluginAuthorName = "InputMapper",
         PluginAuthorEmail = "jhebbel@gmail.com",
         PluginAuthorURL = "http://inputmapper.com"
     )]
-    public class _3DConnection_Plugin : InputDevicePlugin, pluginSettings
+    public class _3DConnexion_Plugin : InputDevicePlugin, pluginSettings
     {
         public SettingGroup settings { get; }
 
-        public _3DConnection_Plugin()
+        public _3DConnexion_Plugin()
         {
             settings = new SettingGroup("General Settings", "");
 
@@ -43,7 +43,7 @@ namespace _3DConnection
                 IEnumerable<HidDevice> foundDevices = HidDevices.Enumerate(0x046D, 0xC628);
 
                 foreach (HidDevice device in foundDevices)
-                    if (Devices.Where(d => (d as _3DConnection_Device).hDevice.DevicePath == device.DevicePath).Count() == 0)
+                    if (Devices.Where(d => (d as _3DConnexion_Device).hDevice.DevicePath == device.DevicePath).Count() == 0)
                     {
                         if (device.IsConnected)
                         {
@@ -77,19 +77,20 @@ namespace _3DConnection
             }
         }
     }
-    public class _3DConnection_Device : InputDevice
+    public class _3DConnexion_Device : InputDevice
     {
         internal HidDevice hDevice;
-
-        public _3DConnection_Device(HidDevice device)
+        
+        public _3DConnexion_Device(HidDevice device)
         {
             this.hDevice = device;
         }
     }
 
 
-    public class NotebookSpaceNavigator : _3DConnection_Device
+    public class NotebookSpaceNavigator : _3DConnexion_Device
     {
+
         internal JoyAxis TranslateX = new JoyAxis("Translate X", DataFlowDirection.Input);
         internal JoyAxis TranslateY = new JoyAxis("Translate Y", DataFlowDirection.Input);
         internal JoyAxis TranslateZ = new JoyAxis("Translate Z", DataFlowDirection.Input);
@@ -101,10 +102,23 @@ namespace _3DConnection
         internal Button Button1 = new Button("Button 1", DataFlowDirection.Input);
         internal Button Button2 = new Button("Button 2", DataFlowDirection.Input);
 
+        //internal InputChannelTypes.JoyAxis TranslateX = new InputChannelTypes.JoyAxis("Translate X");
+        //internal InputChannelTypes.JoyAxis TranslateY = new InputChannelTypes.JoyAxis("Translate Y");
+        //internal InputChannelTypes.JoyAxis TranslateZ = new InputChannelTypes.JoyAxis("Translate Z");
+
+        //internal InputChannelTypes.JoyAxis RotateX = new InputChannelTypes.JoyAxis("Rotate X");
+        //internal InputChannelTypes.JoyAxis RotateY = new InputChannelTypes.JoyAxis("Rotate Y");
+        //internal InputChannelTypes.JoyAxis RotateZ = new InputChannelTypes.JoyAxis("Rotate Z");
+
+        //internal InputChannelTypes.Button Button1 = new InputChannelTypes.Button("Button 1");
+        //internal InputChannelTypes.Button Button2 = new InputChannelTypes.Button("Button 2");
+
         private Thread listenerThread;
 
         public NotebookSpaceNavigator(HidDevice device) : base(device)
         {
+            this.DeviceName = "Notebook Space Navigator";
+
             Channels.Add(TranslateX);
             Channels.Add(TranslateY);
             Channels.Add(TranslateZ);

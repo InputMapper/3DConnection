@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3DConnection", "3DConnection\3DConnection.csproj", "{2B3AE527-D11C-43C3-B9A2-AD394B8A845F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3DConnexion", "3DConnexion\3DConnexion.csproj", "{2B3AE527-D11C-43C3-B9A2-AD394B8A845F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
